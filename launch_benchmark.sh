@@ -1,7 +1,10 @@
 #!/bin/bash
 
 for concurrency in 1 4 8; do
-  echo "Running benchmark with concurrency: $concurrency"
+  # Calculate number of prompts based on concurrency level
+  num_prompts=$((concurrency * 5))
+  
+  echo "Running benchmark with concurrency: $concurrency, num_prompts: $num_prompts"
   
   docker run --rm --gpus all --network host \
     --name bench \
@@ -16,12 +19,12 @@ for concurrency in 1 4 8; do
       --dataset-name random \
       --random-input-len 128 \
       --random-output-len 512 \
-      --num-prompts 5 \
+      --num-prompts $num_prompts \
       --max-concurrency $concurrency \
       --ignore-eos \
       --random-ids \
       --save-result \
-      --result-dir /results/3_trtllm_pytorch \
+      --result-dir /results/4_trtllm_engine \
       --result-filename concurrency_${concurrency}.json \
       --percentile-metrics ttft,tpot,itl,e2el"
   
